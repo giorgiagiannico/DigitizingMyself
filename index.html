@@ -37,21 +37,23 @@
                         point[header[j].trim()] = points[i][j].trim();
                     }
 
-                    new mapboxgl.Marker({ color: 'red' })
+                    // Create marker and add to the map
+                    var marker = new mapboxgl.Marker({ color: 'red' })
                         .setLngLat([parseFloat(point.lng), parseFloat(point.lat)])
                         .setPopup(new mapboxgl.Popup().setHTML(`<div id="popup-${point.id}"></div>`))
                         .addTo(map);
 
                     // Create a form in the popup for each point
-                    map.on('load', function () {
-                        map.on('click', `marker-${point.id}`, function (e) {
-                            var popupContent = `<form id="form-${point.id}">
-                                <label for="text">Enter Text:</label>
-                                <input type="text" id="text-${point.id}" name="text">
-                                <button type="button" onclick="submitForm(${point.id})">Submit</button>
-                            </form>`;
-                            document.getElementById(`popup-${point.id}`).innerHTML = popupContent;
-                        });
+                    marker.getElement().addEventListener('click', function (e) {
+                        var popupContent = `<form id="form-${point.id}">
+                            <label for="text">Enter Text:</label>
+                            <input type="text" id="text-${point.id}" name="text">
+                            <button type="button" onclick="submitForm(${point.id})">Submit</button>
+                        </form>`;
+                        var popup = new mapboxgl.Popup()
+                            .setLngLat(e.target.getLngLat())
+                            .setHTML(popupContent)
+                            .addTo(map);
                     });
                 }
             });
