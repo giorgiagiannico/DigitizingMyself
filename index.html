@@ -3,66 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Map</title>
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css" rel="stylesheet">
+    <title>Rodano Interactive Map</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet">
     <style>
         body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .point { background-color: #FF0000; border-radius: 50%; width: 12px; height: 12px; display: block; }
     </style>
 </head>
 <body>
-    <div id="map"></div>
 
-    <script>
-        mapboxgl.accessToken = 'pk.eyJ1IjoiZ2dpYW5uMDIiLCJhIjoiY2xwbXh1eGlzMDN5MjJqbW1qY2I3ZTRhbiJ9.OvzQUjKS7Vgr63ckOc2N_w';
+<div id="map"></div>
 
-        var map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/dark-v10',
-            center: [8.9463, 45.4150], // Rodano, Italy coordinates
-            zoom: 12
-        });
+<script>
+    mapboxgl.accessToken = 'YOUR_MAPBOX_API_KEY';
 
-        // Load points from CSV file and add to the map
-        fetch('points.csv')
-            .then(response => response.text())
-            .then(csvData => {
-                var points = csvData.split('\n').map(row => row.split(','));
-                var header = points[0];
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/dark-v10', // Use the dark style as a base
+        center: [9.2992, 45.4726], // Rodano, Italy coordinates
+        zoom: 12
+    });
 
-                for (var i = 1; i < points.length; i++) {
-                    var point = {};
-                    for (var j = 0; j < header.length; j++) {
-                        point[header[j].trim()] = points[i][j].trim();
-                    }
+    // Sample points with personalized messages
+    const points = [
+        { coordinates: [9.2992, 45.4726], message: 'Welcome to Rodano! Feel free to leave a message below.' },
+        { coordinates: [9.3035, 45.4707], message: 'This is another point on the map.' },
+        { coordinates: [9.2921, 45.4652], message: 'Yet another point with a personalized message.' }
+        // Add more points as needed
+    ];
 
-                    // Create marker and add to the map
-                    var marker = new mapboxgl.Marker({ color: 'red' })
-                        .setLngLat([parseFloat(point.lng), parseFloat(point.lat)])
-                        .setPopup(new mapboxgl.Popup().setHTML(`<div id="popup-${point.id}"></div>`))
-                        .addTo(map);
+    points.forEach(point => {
+        const markerElement = document.createElement('div');
+        markerElement.className = 'point';
 
-                    // Create a form in the popup for each point
-                    marker.getElement().addEventListener('click', function (e) {
-                        var popupContent = `<form id="form-${point.id}">
-                            <label for="text">Enter Text:</label>
-                            <input type="text" id="text-${point.id}" name="text">
-                            <button type="button" onclick="submitForm(${point.id})">Submit</button>
-                        </form>`;
-                        var popup = new mapboxgl.Popup()
-                            .setLngLat(e.target.getLngLat())
-                            .setHTML(popupContent)
-                            .addTo(map);
-                    });
-                }
-            });
+        const marker = new mapboxgl.Marker(markerElement, { offset: [-6, -6] }) // Offset to center the circle
+            .setLngLat(point.coordinates)
+            .addTo(map);
 
-        function submitForm(pointId) {
-            var textValue = document.getElementById(`text-${pointId}`).value;
-            alert(`Text submitted for Point ${pointId}: ${textValue}`);
-            // You can send the data to a server or perform any other action here
-        }
-    </script>
+        const popup = new mapboxgl.Popup({ closeOnClick: false })
+            .setHTML(`<p>${point.message}</p><form id="form${point.coordinates.join('')}" onsubmit="submitForm(event, ${point.coordinates})"><label for="message">Your message:</label><input type="text" id="message" name="message" required><button type="submit">Submit</button></form>`);
+
+        marker.setPopup(popup);
+    });
+
+    function submitForm(event, coordinates) {
+        event.preventDefault();
+        const message = document.getElementById(`form${coordinates.join('')}`).elements.message.value;
+        // You can handle the submitted message here, e.g., send it to a server or log it
+        console.log(`Message submitted at coordinates ${coordinates}: ${message}`);
+    }
+</script>
+
 </body>
 </html>
