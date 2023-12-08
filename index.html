@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Map</title>
+  <title>Digitizing Myself</title>
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script>
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
   <style>
     body { margin: 0; padding: 0; }
@@ -36,8 +36,8 @@
     var map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/ggiann02/clpw1hmir00xr01p64y2p18xh',
-      center: [9.1900, 45.0703],
-      zoom: 12
+      center: [9.2133, 45.2827],
+      zoom: 20
     });
 
     map.on('load', function () {
@@ -121,8 +121,8 @@
 
       // Add new point to the CSV file
       var csvData = Papa.unparse(map.getSource('points')._data.features.map(feature => ({
-        lat: feature.geometry.coordinates[1],
-        lng: feature.geometry.coordinates[0],
+        longitude: feature.geometry.coordinates[0],
+        latitude: feature.geometry.coordinates[1],
         message: feature.properties.message
       })));
 
