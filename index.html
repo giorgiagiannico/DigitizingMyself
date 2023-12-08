@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Map</title>
+  <title>Digitizing Myself</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css" rel="stylesheet" />
   <style>
@@ -32,14 +33,44 @@
         .then(csvData => {
           var points = Papa.parse(csvData, { header: true }).data;
 
-          // Add points to the map
+          // Add a circle layer for each point
+          map.addSource('points', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: points.map(point => ({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [parseFloat(point.lng), parseFloat(point.lat)]
+                },
+                properties: {
+                  message: point.message
+                }
+              }))
+            }
+          });
+
+          map.addLayer({
+            id: 'points',
+            type: 'circle',
+            source: 'points',
+            paint: {
+              'circle-color': 'darkblue',
+              'circle-radius': 6,
+              'circle-stroke-width': 1,
+              'circle-stroke-color': 'white'
+            }
+          });
+
+          // Add popups for each point
           points.forEach(point => {
-            new mapboxgl.Marker({
-              color: 'darkblue',
-              draggable: false)}
-              .setLngLat([parseFloat(point.longitude), parseFloat(point.latitude)])
+            var popup = new mapboxgl.Popup().setHTML('<p>' + point.message + '</p><form><input type="text" placeholder="Enter something"><button type="submit">Submit</button></form>');
+
+            new mapboxgl.Marker()
+              .setLngLat([parseFloat(point.lng), parseFloat(point.lat)])
               .addTo(map)
-              .setPopup(new mapboxgl.Popup().setHTML('<p>' + point.message + '</p><form><input type="text" placeholder="Enter something"><button type="submit">Submit</button></form>'));
+              .setPopup(popup);
           });
         });
     });
