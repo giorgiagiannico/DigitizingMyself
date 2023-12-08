@@ -67,7 +67,7 @@
             var popup = new mapboxgl.Popup().setHTML('<p>' + point.message + '</p><form><input type="text" placeholder="Enter something"><button type="submit">Submit</button></form>');
 
             new mapboxgl.Marker()
-              .setLngLat([parseFloat(point.lng), parseFloat(point.lat)])
+              .setLngLat([parseFloat(point.longitude), parseFloat(point.latitude)])
               .addTo(map)
               .setPopup(popup);
           });
