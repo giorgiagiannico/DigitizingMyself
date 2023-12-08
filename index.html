@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Map</title>
+  <title>Digitizing Myself</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script>
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
@@ -20,9 +20,9 @@
 
     var map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/ggiann02/clpw1hmir00xr01p64y2p18xh', // Replace with your custom style URL
-      center: [9.2133, 45.2827], // Updated center coordinates
-      zoom: 18 // Updated zoom level
+      style: 'mapbox://styles/ggiann02/clpw1hmir00xr01p64y2p18xh', // Set the minimalistic light style
+      center: [9.1900, 45.0703], // Coordinates for Rodano, Italy
+      zoom: 10
     });
 
     // Load and add points from the CSV file
@@ -32,44 +32,12 @@
         .then(csvData => {
           var points = Papa.parse(csvData, { header: true }).data;
 
-          // Add a circle layer for each point
-          map.addSource('points', {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection',
-              features: points.map(point => ({
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [parseFloat(point.longitude), parseFloat(point.latitude)]
-                },
-                properties: {
-                  message: point.message
-                }
-              }))
-            }
-          });
-
-          map.addLayer({
-            id: 'points',
-            type: 'circle',
-            source: 'points',
-            paint: {
-              'circle-color': 'darkpink', // Updated to dark pink color
-              'circle-radius': 6,
-              'circle-stroke-width': 1,
-              'circle-stroke-color': 'white'
-            }
-          });
-
-          // Add popups for each point
+          // Add points to the map
           points.forEach(point => {
-            var popup = new mapboxgl.Popup().setHTML('<p>' + point.message + '</p><form><input type="text" placeholder="Enter something"><button type="submit">Submit</button></form>');
-
-            new mapboxgl.Marker()
+            new mapboxgl.Marker({ color: 'darkblue' })
               .setLngLat([parseFloat(point.longitude), parseFloat(point.latitude)])
               .addTo(map)
-              .setPopup(popup);
+              .setPopup(new mapboxgl.Popup().setHTML('<p>' + point.message + '</p><form><input type="text" placeholder="Enter something"><button type="submit">Submit</button></form>'));
           });
         });
     });
