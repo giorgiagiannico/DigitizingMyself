@@ -34,7 +34,11 @@
 
           // Add points to the map
           points.forEach(point => {
-            new mapboxgl.Marker({ color: 'darkblue' })
+            new mapboxgl.CircleMarker({
+              color: 'darkred',
+              radius: 8,  // Adjust the radius as needed
+              stroke: false  // Disable stroke for a filled circle
+              })
               .setLngLat([parseFloat(point.longitude), parseFloat(point.latitude)])
               .addTo(map)
               .setPopup(new mapboxgl.Popup().setHTML('<p>' + point.message + '</p><form><input type="text" placeholder="Enter something"><button type="submit">Submit</button></form>'));
