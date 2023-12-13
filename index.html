@@ -37,7 +37,7 @@
             new mapboxgl.Marker({ color: 'lightpink' })
               .setLngLat([parseFloat(point.longitude), parseFloat(point.latitude)])
               .addTo(map)
-              .setPopup(new mapboxgl.Popup().setHTML('<p>' + point.message + '</p><form><input type="text" placeholder="Enter something"><button type="submit">Submit</button></form>'));
+              .setPopup(new mapboxgl.Popup().setHTML('<p>' + point.message + '</p><form><input type="text" placeholder="What memory does this evoke?"><button type="submit">Submit</button></form>'));
           });
         });
     });
